@@ -1,0 +1,52 @@
+# Python-related
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+
+# Dependency directories
+venv/
+env/
+env1/
+env2/
+.venv/
+.idea/
+
+# Editor and IDE specific files
+.vscode/
+*.sublime-project
+*.sublime-workspace
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.pyc
+*.pyo
+*.pyd
+
+# Local development settings
+*.env
+.env
+env.sh
+.env.sh
+env.bash
+.env.bash
+env.bat
+.env.bat
+
+# Log files
+*.log
+
+# Compiled files
+*.exe
+*.dll
+*.so
+*.out
+*.log
+*.swp
+
+databases/
+chroma_db/
+
+.DS_Store

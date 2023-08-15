@@ -5,6 +5,7 @@ from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.embeddings import HuggingFaceInstructEmbeddings
 from langchain.vectorstores import FAISS
+from langchain.vectorstores import Chroma
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
@@ -34,7 +35,7 @@ def get_text_chunks(text):
 def get_vector_store(text_chunks):
     embeddings = OpenAIEmbeddings()
     #embeddings = HuggingFaceInstructEmbeddings(model_name = "hkunlp/instructor-xl")
-    vector_store = FAISS.from_texts(text_chunks, embedding=embeddings)
+    vector_store = Chroma.from_texts(text_chunks, embedding=embeddings, persist_directory = "./chroma_db")
     return vector_store
 
 def get_conversation_chain(vectorstore):
@@ -67,12 +68,21 @@ if "chat_history" not in st.session_state:
 
 def main():
     load_dotenv()
-    st.set_page_config(page_title="PDFs GPT", page_icon=":books:")
+    st.set_page_config(page_title="AI", page_icon=":books:")
     st.write(css, unsafe_allow_html=True)
-    st.header("PDFs GPT :books:")
+    st.header("AI")
     user_question = st.text_input("Faça uma pergunta:")
     if user_question:
         handle_user_input(user_question)
+
+    vector_store = Chroma(persist_directory="./chroma_db", embedding_function=OpenAIEmbeddings())
+
+    if (vector_store != None):
+        vector_store.get() 
+
+    #vector_store = FAISS.load_local("./dados")
+    #create conversation chain
+    st.session_state.conversation = get_conversation_chain(vector_store)
 
     #st.write(user_template.replace("{{MSG}}", "hello robot"), unsafe_allow_html=True)
     #st.write(bot_template.replace("{{MSG}}", "hello human"), unsafe_allow_html=True)
@@ -86,11 +96,12 @@ def main():
 
                 #get text chunks
                 text_chunks = get_text_chunks(raw_text)
-                #st.write(text_chunks)
+                st.write(text_chunks)
 
                 #create vector store
                 vector_store = get_vector_store(text_chunks)
 
+                #vector_store = FAISS.load_local("./dados")
                 #create conversation chain
                 st.session_state.conversation = get_conversation_chain(vector_store)
 if __name__ == '__main__':
